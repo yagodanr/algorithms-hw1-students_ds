@@ -41,7 +41,7 @@ public:
         return *new Student();
     }
 
-    std::vector<std::string> getGroupsWithEqualNames(std::string name, std::string surname) override {
+    std::vector<std::string> getGroupsWithEqualNames() override {
         return std::vector<std::string>();
     }
 
