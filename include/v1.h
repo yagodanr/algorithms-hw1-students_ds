@@ -7,9 +7,10 @@
 
 class Solution {
 public:
-    virtual Student get_student_by_name(std::string name, std::string surname);
-    virtual std::vector<std::string> get_groups_with_equal_names(std::string name, std::string surname);
-    virtual void change_group_by_email(std::string email, std::string new_group);
+    virtual Student getStudentByName(std::string name, std::string surname) = 0;
+    virtual std::vector<std::string> getGroupsWithEqualNames(std::string name, std::string surname) = 0;
+    virtual void changeGroupByEmail(std::string email, std::string new_group) = 0;
+    virtual void addStudent(Student& student) = 0;
 };
 
 #endif
