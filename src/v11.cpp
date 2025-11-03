@@ -14,23 +14,21 @@ namespace std {
 struct Group {
     void addStudent(Student& student) {
         students[student.m_email] = student;
-        NSHashes.push_back(h({student.m_name, student.m_surname}));
+        if(NSHashes[{student.m_name, student.m_surname}]++) {
+            ++sameNamed;
+        }
     }
 
     void deleteStudent(Student& student) {
         students.erase(student.m_email);
-        size_t h_st = h({student.m_name, student.m_surname});
-        for(int i=0, sz=NSHashes.size(); i<sz; ++i) {
-            if(NSHashes[i] == h_st) {
-                NSHashes.erase(NSHashes.begin() + i);
-                return;
-            }
+        if(--NSHashes[{student.m_name, student.m_surname}] >= 1) {
+            --sameNamed;
         }
-
     }
     std::hash<std::pair<std::string, std::string>> h;
     std::unordered_map<std::string, Student> students;
-    std::vector<size_t> NSHashes;
+    std::unordered_map<std::pair<std::string, std::string>, int> NSHashes;
+    unsigned int sameNamed = 0;
 };
 
 
