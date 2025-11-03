@@ -1,15 +1,11 @@
-#include "v1.h"
 #include <vector>
 #include <unordered_map>
+#include <fstream>
+#include <string>
+#include <sstream>
 
-namespace std {
-    template <>
-    struct hash<std::pair<std::string, std::string>> {
-        size_t operator()(const std::pair<std::string, std::string>& p) const {
-            return hash<string>{}(p.first) + hash<string>{}(p.second);
-        }
-    };
-}
+
+#include "v1.h"
 
 struct Group {
     void addStudent(Student& student) {
@@ -25,7 +21,6 @@ struct Group {
             --sameNamed;
         }
     }
-    std::hash<std::pair<std::string, std::string>> h;
     std::unordered_map<std::string, Student> students;
     std::unordered_map<std::pair<std::string, std::string>, int> NSHashes;
     unsigned int sameNamed = 0;
@@ -33,14 +28,28 @@ struct Group {
 
 
 
-class MySolution: public virtual Solution{
+class MySolution: public Solution{
 public:
-    Student getStudentByName(std::string name, std::string surname) override {
-        return *new Student();
+    std::vector<Student*> getStudentsByName(std::string name, std::string surname) override {
+        std::vector<Student*> students;
+        for(auto &gr: m_groups) {
+            for(auto &st: gr.second.students) {
+                if(st.second.m_name == name && st.second.m_surname == surname) {
+                    students.push_back(&st.second);
+                }
+            }
+        }
+        return students;
     }
 
     std::vector<std::string> getGroupsWithEqualNames() override {
-        return std::vector<std::string>();
+        std::vector<std::string> res_groups;
+        for(const auto &gr: m_groups) {
+            if(gr.second.sameNamed) {
+                res_groups.push_back(gr.first);
+            }
+        }
+        return res_groups;
     }
 
     void changeGroupByEmail(std::string email, std::string new_group) override {

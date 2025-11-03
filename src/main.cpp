@@ -8,6 +8,7 @@
 #include <chrono>
 #include "v1.h"
 #include "v11.cpp"
+#include "v12.cpp"
 
 using HRClock = std::chrono::high_resolution_clock;
 
@@ -15,9 +16,8 @@ using HRClock = std::chrono::high_resolution_clock;
 #define OPERATION1 2
 #define OPERATION2 10
 #define OPERATION3 30
-#define EPOCHS 100
 #define SECONDS_TEST 10
-#define EPOCHS_STEP_TEST 100
+#define EPOCHS_STEP_TEST 1
 
 std::pair<SOLUT, std::vector<Student>> init(std::string path, size_t max_lines=-1) {
     std::ifstream fin;
@@ -32,7 +32,7 @@ std::pair<SOLUT, std::vector<Student>> init(std::string path, size_t max_lines=-
     SOLUT solution;
     std::vector<Student> students;
     fin >> std::ws && std::getline(fin, line);
-    for (size_t i=0; i<max_lines && fin >> std::ws && std::getline(fin, line); ++i) {
+    for (size_t i=0; (i<max_lines || max_lines < 0) && fin >> std::ws && std::getline(fin, line); ++i) {
         row.clear();
         std::stringstream s(line);
 
@@ -65,16 +65,28 @@ std::pair<SOLUT, std::vector<Student>> init(std::string path, size_t max_lines=-
 long long test(Solution& solution, std::vector<Student>& students, size_t epochs) {
     long long cnt_operations = 0;
     size_t n = students.size();
+    if(n == 0) {
+        return 0;
+    }
 
     for(; epochs > 0; --epochs, ++cnt_operations) {
         int operation_type = rand() % (OPERATION1+OPERATION2+OPERATION3);
 
         if(operation_type < OPERATION1) {
             size_t student_ind = rand() % n;
-            solution.getStudentByName(students[student_ind].m_name, students[student_ind].m_surname);
+            auto x = solution.getStudentsByName(students[student_ind].m_name, students[student_ind].m_surname);
+            if(x.empty()) {
+                std::cerr << "Empty result of get students" << std::endl;
+                return cnt_operations;
+            }
         }
         else if(operation_type < OPERATION1 + OPERATION2) {
-            solution.getGroupsWithEqualNames();
+            auto x = solution.getGroupsWithEqualNames();
+            if(x.empty()) {
+                // std::cerr << "Empty result of get groups" << std::endl;
+                // return cnt_operations;
+
+            }
         }
         else {
             size_t student_ind = rand() % n;
@@ -104,17 +116,29 @@ long long testSeconds(Solution& solution, std::vector<Student>& students, size_t
             break;
         }
 
-        test(solution, students, epochsStep);
-        cnt_operations += epochsStep;
+        ;
+        cnt_operations += test(solution, students, epochsStep);
     }
 
     return cnt_operations;
 }
 
+std::vector<std::pair<size_t, long long>> runTests(std::string path, size_t max_n=100000, size_t sec=10, size_t epochsStep=100) {
+    std::vector<std::pair<size_t, long long>> measures;
+    for(size_t i=100; i<=max_n; i*=10) {
+        auto [solution, students] = init(path, i);
+        measures.push_back({i, testSeconds(solution, students, sec, epochsStep)});
+        // solution.clear();
+    }
+
+    return measures;
+}
+
+
 
 int main() {
     srand(time(0));
-    auto [solution, students] = init("../students.csv", EPOCHS);
+    auto [solution, students] = init("../students.csv");
     solution.changeGroupByEmail("halyna.melnyk39@student.org", "VXJ-26");
 
     // auto start = HRClock::now();
@@ -122,8 +146,13 @@ int main() {
     // auto duration = std::chrono::duration_cast<std::chrono::microseconds>(HRClock::now() - start);
     // std::cout << EPOCHS << " number of requests processed in " << duration << " microseconds" << std::endl;
 
+    // std::cout << "Executed " <<  testSeconds(solution, students, SECONDS_TEST, EPOCHS_STEP_TEST) << " operations in " << SECONDS_TEST << " seconds.";
 
-    std::cout << "Executed " <<  testSeconds(solution, students, SECONDS_TEST, EPOCHS_STEP_TEST) << " operations in " << SECONDS_TEST << " seconds.";
+    std::vector<std::pair<size_t, long long>> measures = runTests("../students.csv", 100000, SECONDS_TEST, EPOCHS_STEP_TEST);
+
+    for(auto &[n, op]: measures) {
+        std::cout << "n=" << n << "\t" << op << " per " << SECONDS_TEST << " seconds" << std::endl;
+    }
 
     return 0;
 }
