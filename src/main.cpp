@@ -25,8 +25,8 @@ using HRClock = std::chrono::steady_clock;
 #define OPERATION1 2
 #define OPERATION2 10
 #define OPERATION3 30
-#define SECONDS_TEST 2
-#define EPOCHS_STEP_TEST 1000
+#define SECONDS_TEST 10
+#define EPOCHS_STEP_TEST 1
 
 
 struct BenchmarkResult {
@@ -162,9 +162,8 @@ long long testSeconds(Solution& solution, std::vector<Student*>& students,
 
     while(true) {
         auto delta_time = HRClock::now() - start;
-        auto timer = std::chrono::duration_cast<std::chrono::seconds>(delta_time);
 
-        if(timer >= timestep) {
+        if(delta_time >= timestep) {
             break;
         }
 
@@ -455,6 +454,7 @@ int main() {
 
     std::vector<BenchmarkResult> measures = runAllTests("../students.csv", 100000, SECONDS_TEST, EPOCHS_STEP_TEST);
     printBenchmarkResults(measures);
+    printComparisonTable(measures);
 
     return 0;
 }
