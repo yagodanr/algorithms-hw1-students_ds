@@ -1,9 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <unordered_map>
-#include <fstream>
-#include <string>
-#include <sstream>
+#include <unordered_set>
 
 #include "v1.h"
 
@@ -48,25 +46,11 @@ struct Group3 {
 class MySolution3: public Solution{
 public:
     std::vector<Student*> getStudentsByName(std::string name, std::string surname) override {
-        std::vector<Student*> students;
-        for(auto &gr: m_groups) {
-            for(auto &st: gr.second->students) {
-                if(st.second->m_name == name && st.second->m_surname == surname) {
-                    students.push_back(st.second);
-                }
-            }
-        }
-        return students;
+        return m_students[{name, surname}];
     }
 
     std::vector<std::string> getGroupsWithEqualNames() override {
-        std::vector<std::string> res_groups;
-        for(const auto &gr: m_groups) {
-            if(gr.second->sameNamed) {
-                res_groups.push_back(gr.first);
-            }
-        }
-        return res_groups;
+        return {m_duplicateGroups.begin(), m_duplicateGroups.end()};
     }
 
     void changeGroupByEmail(std::string email, std::string new_group) override {
@@ -93,10 +77,13 @@ public:
         }
 
         old_gr->deleteStudent(st);
-        m_groups[new_group]->addStudent(st);
+        if(!old_gr->sameNamed) {
+            m_duplicateGroups.erase(old_group);
+        }
 
-        m_mailMap[email] = new_group;  // Store group name, not pointer
+        m_mailMap[email] = new_group;
         st->m_group = new_group;
+        addStudent(*st);
     }
 
     void addStudent(Student& student) override {
@@ -108,7 +95,12 @@ public:
         }
 
         m_groups[s_group]->addStudent(&student);
-        m_mailMap[student.m_email] = s_group;  // Store group name, not pointer
+        if(m_groups[s_group]->sameNamed) {
+            m_duplicateGroups.insert(s_group);
+        }
+
+        m_mailMap[student.m_email] = s_group;
+        m_students[{student.m_name, student.m_surname}].push_back(&student);
     }
     std::vector<Student*> getStudents() override {
         std::vector<Student*> students;
@@ -137,4 +129,6 @@ public:
 private:
     std::unordered_map<std::string, Group3*> m_groups;
     std::unordered_map<std::string, std::string> m_mailMap;  // Changed: email -> group_name
+    std::unordered_set<std::string> m_duplicateGroups;
+    std::unordered_map<std::pair<std::string, std::string>, std::vector<Student*>> m_students;
 };

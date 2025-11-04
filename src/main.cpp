@@ -20,14 +20,13 @@
 #include "v13.cpp"
 #include "v14.cpp"
 
-using HRClock = std::chrono::high_resolution_clock;
+using HRClock = std::chrono::steady_clock;
 
-#define SOLUT MySolution4
 #define OPERATION1 2
 #define OPERATION2 10
 #define OPERATION3 30
-#define SECONDS_TEST 10
-#define EPOCHS_STEP_TEST 1
+#define SECONDS_TEST 2
+#define EPOCHS_STEP_TEST 1000
 
 
 struct BenchmarkResult {
