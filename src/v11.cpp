@@ -27,26 +27,26 @@ struct Group {
 
 class MySolution: public Solution{
 public:
-    std::vector<Student*> getStudentsByName(std::string name, std::string surname) override {
-        std::vector<Student*> students;
+    std::vector<Student*>& getStudentsByName(std::string name, std::string surname) override {
+        m_tempStudentsByName.clear();
         for(auto &gr: m_groups) {
             for(auto &st: gr.second.students) {
                 if(st.second.m_name == name && st.second.m_surname == surname) {
-                    students.push_back(&st.second);
+                    m_tempStudentsByName.push_back(&st.second);
                 }
             }
         }
-        return students;
+        return m_tempStudentsByName;
     }
 
-    std::vector<std::string> getGroupsWithEqualNames() override {
-        std::vector<std::string> res_groups;
+    std::vector<std::string>& getGroupsWithEqualNames() override {
+        m_tempGroupsList.clear();
         for(const auto &gr: m_groups) {
             if(gr.second.sameNamed) {
-                res_groups.push_back(gr.first);
+                m_tempGroupsList.push_back(gr.first);
             }
         }
-        return res_groups;
+        return m_tempGroupsList;
     }
 
     void changeGroupByEmail(std::string email, std::string new_group) override {
@@ -63,14 +63,14 @@ public:
         m_mailMap[student.m_email] = m_groups[s_group];
     }
 
-    std::vector<Student*> getStudents() override {
-        std::vector<Student*> students;
+    std::vector<Student*>& getStudents() override {
+        m_tempStudentList.clear();
         for(auto &gr: m_groups) {
             for(auto &st: gr.second.students) {
-                students.push_back(&st.second);
+                m_tempStudentList.push_back(&st.second);
             }
         }
-        return students;
+        return m_tempStudentList;
     }
 
     void clear() override {
@@ -81,4 +81,7 @@ public:
 private:
     std::unordered_map<std::string, Group> m_groups;
     std::unordered_map<std::string, Group> m_mailMap;
+    std::vector<Student*> m_tempStudentsByName;
+    std::vector<std::string> m_tempGroupsList;
+    std::vector<Student*> m_tempStudentList;
 };

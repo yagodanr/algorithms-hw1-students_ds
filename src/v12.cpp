@@ -45,12 +45,13 @@ struct Group2 {
 
 class MySolution2: public Solution{
 public:
-    std::vector<Student*> getStudentsByName(std::string name, std::string surname) override {
+    std::vector<Student*>& getStudentsByName(std::string name, std::string surname) override {
         return m_students[{name, surname}];
     }
 
-    std::vector<std::string> getGroupsWithEqualNames() override {
-        return {m_duplicateGroups.begin(), m_duplicateGroups.end()};
+    std::vector<std::string>& getGroupsWithEqualNames() override {
+        m_tempGroupsList.assign(m_duplicateGroups.begin(), m_duplicateGroups.end());
+        return m_tempGroupsList;
     }
 
     void changeGroupByEmail(std::string email, std::string new_group) override {
@@ -102,14 +103,14 @@ public:
         m_mailMap[student.m_email] = s_group;
         m_students[{student.m_name, student.m_surname}].push_back(&student);
     }
-    std::vector<Student*> getStudents() override {
-        std::vector<Student*> students;
+    std::vector<Student*>& getStudents() override {
+        m_tempStudentList.clear();
         for(auto &gr: m_groups) {
             for(auto &st: gr.second->students) {
-                students.push_back(st.second);
+                m_tempStudentList.push_back(st.second);
             }
         }
-        return students;
+        return m_tempStudentList;
     }
 
 
@@ -131,4 +132,6 @@ private:
     std::map<std::string, std::string> m_mailMap;  // Changed: email -> group_name
     std::set<std::string> m_duplicateGroups;
     std::map<std::pair<std::string, std::string>, std::vector<Student*>> m_students;
+    std::vector<std::string> m_tempGroupsList;
+    std::vector<Student*> m_tempStudentList;
 };
