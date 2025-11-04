@@ -48,6 +48,13 @@ public:
     void addStudent(Student& student) override {
         m_students.push_back(&student);
     }
+    std::vector<Student*> getStudents() override {
+        std::vector<Student*> students;
+        for(auto &st: m_students) {
+            students.push_back(st);
+        }
+        return students;
+    }
 
     void clear() override {
         m_students.clear();

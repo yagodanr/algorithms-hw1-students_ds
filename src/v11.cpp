@@ -66,6 +66,16 @@ public:
         m_mailMap[student.m_email] = m_groups[s_group];
     }
 
+    std::vector<Student*> getStudents() override {
+        std::vector<Student*> students;
+        for(auto &gr: m_groups) {
+            for(auto &st: gr.second.students) {
+                students.push_back(&st.second);
+            }
+        }
+        return students;
+    }
+
     void clear() override {
 
     }

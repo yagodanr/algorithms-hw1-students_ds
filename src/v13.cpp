@@ -110,6 +110,17 @@ public:
         m_groups[s_group]->addStudent(&student);
         m_mailMap[student.m_email] = s_group;  // Store group name, not pointer
     }
+    std::vector<Student*> getStudents() override {
+        std::vector<Student*> students;
+        for(auto &gr: m_groups) {
+            for(auto &st: gr.second->students) {
+                students.push_back(st.second);
+            }
+        }
+        return students;
+    }
+
+
 
     void clear() override {
         // Clean up dynamically allocated groups

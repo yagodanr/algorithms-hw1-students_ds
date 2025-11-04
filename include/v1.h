@@ -29,6 +29,7 @@ public:
     virtual std::vector<std::string> getGroupsWithEqualNames() = 0;
     virtual void changeGroupByEmail(std::string email, std::string new_group) = 0;
     virtual void addStudent(Student& student) = 0;
+    virtual std::vector<Student*> getStudents() = 0;
     virtual void clear() = 0;
 };
 
