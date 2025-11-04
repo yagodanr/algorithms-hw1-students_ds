@@ -20,6 +20,8 @@
 #include "v13.cpp"
 #include "v14.cpp"
 
+#include "s4.cpp"
+
 using HRClock = std::chrono::steady_clock;
 
 #define OPERATION1 2
@@ -455,6 +457,25 @@ int main() {
     std::vector<BenchmarkResult> measures = runAllTests("../students.csv", 100000, SECONDS_TEST, EPOCHS_STEP_TEST);
     printBenchmarkResults(measures);
     printComparisonTable(measures);
+
+
+
+    std::vector<Student*> students = readStudents("../students.csv");
+
+    auto start = HRClock::now();
+    sortBuiltIn(students);
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(HRClock::now() - start);
+    std::cout << "sortBuiltIn executed in " << duration.count() << " milliseconds" << std::endl;
+
+    saveToCSV(students, "../sortedBuildIt.csv");
+
+    students = readStudents("../students.csv");
+
+    start = HRClock::now();
+    sortRadix(students);
+    duration = std::chrono::duration_cast<std::chrono::milliseconds>(HRClock::now() - start);
+    std::cout << "sortRadix executed in " << duration.count() << " milliseconds" << std::endl;
+    saveToCSV(students, "../sortedRadix.csv");
 
     return 0;
 }

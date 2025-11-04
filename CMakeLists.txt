@@ -14,8 +14,10 @@ target_include_directories(v1 PUBLIC include)
 add_sanitizers(v1)
 
 
+
 add_executable(students_db src/main.cpp)
 target_include_directories(students_db PUBLIC include)
 target_link_libraries(students_db PUBLIC v1)
+# target_link_libraries(students_db PUBLIC s4)
 add_sanitizers(students_db)
 target_compile_options(students_db PRIVATE -O2 -g)
