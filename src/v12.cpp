@@ -1,7 +1,3 @@
-#pragma once
-#ifndef V2_HEADER
-#define V2_HEADER
-
 #include "v1.h"
 #include <vector>
 #include <map>
@@ -66,11 +62,11 @@ public:
         m_mailMap[student.m_email] = m_groups[s_group];
     }
 
+    void clear() override {
 
+    }
 
 private:
     std::map<std::string, Group2> m_groups;
     std::map<std::string, Group2> m_mailMap;
 };
-
-#endif

@@ -66,6 +66,9 @@ public:
         m_mailMap[student.m_email] = m_groups[s_group];
     }
 
+    void clear() override {
+
+    }
 
 
 private:
